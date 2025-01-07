@@ -6,7 +6,6 @@ import * as ReactDOM from 'react-dom/client';
 import './index.css'
 import App from './App.jsx'
 import ContactUs from './pages/ContactUs.jsx';
-import About from './pages/about.jsx';
 import Home from './pages/Home.jsx';
 import Layout from './layout/layout.jsx';
 import users from './pages/users.jsx';
