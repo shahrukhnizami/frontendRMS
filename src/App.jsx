@@ -34,11 +34,7 @@ const NAVIGATION = [
     title: 'users',
     icon: <PeopleIcon />,
   },
-  {
-    segment: 'about',
-    title: 'about',
-    icon: <PeopleIcon />,
-  },
+ 
 ];
 
 
