@@ -3,15 +3,8 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import ContactsIcon from '@mui/icons-material/Contacts';
 import PeopleIcon from '@mui/icons-material/People';
 
-import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom'
-import Header from './components/Header'
-import Home from './pages/Home'
+import { Outlet  } from 'react-router-dom'
 
-import Form from './pages/Form'
-import Admin from './pages/Admin'
-import Dashboard from './pages/Dashboard'
-import Emailsend from './pages/emailsend'
-import DashboardLayoutNavigationLinks from './pages/Dashboard'
 
 
 
