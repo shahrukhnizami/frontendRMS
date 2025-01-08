@@ -30,14 +30,15 @@ const router = createBrowserRouter([
             path: '/admin',
             Component: Dashboard,
           },
-          {
-            path: 'contact',
-            Component: ContactUs,
-          },
+        
         
           {
             path: 'users',
             Component: users,
+          },
+          {
+            path: 'contact',
+            Component: ContactUs,
           },
         ],
       },

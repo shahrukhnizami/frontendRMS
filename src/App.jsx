@@ -16,15 +16,16 @@ const NAVIGATION = [
     icon: <DashboardIcon />,
   },
   {
-    segment: 'admin/contact',
-    title: 'Contact',
-    icon: <ContactsIcon />,
-  },
-  {
     segment: 'admin/users',
     title: 'Users',
     icon: <PeopleIcon />,
   },
+  {
+    segment: 'admin/contact',
+    title: 'Contact',
+    icon: <ContactsIcon />,
+  },
+ 
 ];
 
 function App() {
@@ -34,7 +35,7 @@ function App() {
         navigation={NAVIGATION}
         branding={{
           logo: (
-            <Link to="/admin">
+            <Link herf="/admin">
               <img
                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZkmOfnH5s5nqfhX1FQhV5J-yv4iAtWcVf1mLpWFDujTzg48yHEiCOiAdr5YQ7BwIx69w&usqp=CAU"
                 alt="MUI logo"
