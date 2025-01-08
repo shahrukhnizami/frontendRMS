@@ -8,6 +8,7 @@ import {
   Grid,
   Link,
 } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom'; // Import Link from react-router-dom
 
 const Login = () => {
   const handleSubmit = (event) => {
@@ -28,8 +29,10 @@ const Login = () => {
           alignItems: 'center',
         }}
       >
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZkmOfnH5s5nqfhX1FQhV5J-yv4iAtWcVf1mLpWFDujTzg48yHEiCOiAdr5YQ7BwIx69w&usqp=CAU" alt="MUI logo" />,
-       
+        <img
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZkmOfnH5s5nqfhX1FQhV5J-yv4iAtWcVf1mLpWFDujTzg48yHEiCOiAdr5YQ7BwIx69w&usqp=CAU"
+          alt="MUI logo"
+        />
         <Box
           component="form"
           onSubmit={handleSubmit}
@@ -77,7 +80,9 @@ const Login = () => {
             </Grid>
           </Grid>
         </Box>
-       <Link href="admin"><Button>Admin Page</Button></Link>
+        <RouterLink to="/admin" style={{ textDecoration: 'none' }}>
+          <Button variant="contained">Admin Page</Button>
+        </RouterLink>
       </Box>
     </Container>
   );
