@@ -6,34 +6,42 @@ import * as ReactDOM from 'react-dom/client';
 import './index.css'
 import App from './App.jsx'
 import ContactUs from './pages/ContactUs.jsx';
-import Home from './pages/Home.jsx';
 import Layout from './layout/layout.jsx';
 import users from './pages/users.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import Login from './pages/Login.jsx';
 
 const router = createBrowserRouter([
   {
+    
     Component: App,
     children: [
       {
         path: '/',
+        Component: Login,
+       
+        
+      },
+      {
+        path: '/admin',
         Component: Layout,
         children: [
           {
-            path: '/',
+            path: '/admin',
             Component: Dashboard,
           },
           {
-            path: '/contact',
+            path: 'contact',
             Component: ContactUs,
           },
         
           {
-            path: '/users',
+            path: 'users',
             Component: users,
           },
         ],
       },
+     
     ],
   },])
 
