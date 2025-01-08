@@ -77,6 +77,7 @@ const Login = () => {
             </Grid>
           </Grid>
         </Box>
+       <Link href="admin"><Button>Admin Page</Button></Link>
       </Box>
     </Container>
   );
