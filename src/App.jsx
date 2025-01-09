@@ -4,6 +4,7 @@ import ContactsIcon from '@mui/icons-material/Contacts';
 import PeopleIcon from '@mui/icons-material/People';
 
 import { Outlet, Link } from 'react-router-dom';
+import { Avatar } from '@mui/material';
 
 const NAVIGATION = [
   {
@@ -49,7 +50,10 @@ function App() {
             </Link>
           ),
           segment: 'admin',
-        }}
+          
+        }
+        
+      }
       >
         <Outlet />
       </AppProvider>
