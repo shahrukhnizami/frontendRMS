@@ -1,5 +1,4 @@
-// src/pages/Login.js
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Container,
   Box,
@@ -11,51 +10,42 @@ import {
 } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useAuth } from '../context/AuthContext'; // Import the useAuth hook
 
-const Login = () => {
-  const { login } = useAuth(); // Access login function from AuthContext
+const Register = () => {
   const navigate = useNavigate();
+  const [error, setError] = useState(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    const name = data.get('name');
     const email = data.get('email');
     const password = data.get('password');
-    console.log({ email, password });
+    const role = 'user'; // Default role
 
     try {
       const response = await axios.post(
-        "http://localhost:4040/api/auth/login",
+        'http://localhost:4040/api/auth/register',
         {
+          name,
           email,
           password,
+          role,
         },
         {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         }
       );
 
-      if (response.status === 200) {
-        const { token, user } = response.data;
-
-        // Use the login function from AuthContext to set the user
-        login(user, token);
-
-        // Redirect user based on their role
-        if (user.role === 'admin') {
-          navigate('/admin');
-        } else if (user.role === 'agent') {
-          navigate('/agent');
-        } else {
-          navigate('/admin');
-        }
+      if (response.status === 201) {
+        alert('Registration successful!');
+        navigate('/login');
       }
     } catch (error) {
-      console.error('Login error:', error.response?.data || error.message);
-      alert(error.response?.data?.message || 'Login failed. Please try again.');
+      console.error('Registration error:', error.response?.data || error.message);
+      setError(error.response?.data?.message || 'Registration failed. Please try again.');
     }
   };
 
@@ -69,10 +59,9 @@ const Login = () => {
           alignItems: 'center',
         }}
       >
-        <img
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZkmOfnH5s5nqfhX1FQhV5J-yv4iAtWcVf1mLpWFDujTzg48yHEiCOiAdr5YQ7BwIx69w&usqp=CAU"
-          alt="MUI logo"
-        />
+        <Typography component="h1" variant="h5">
+          Sign Up
+        </Typography>
         <Box
           component="form"
           onSubmit={handleSubmit}
@@ -83,11 +72,20 @@ const Login = () => {
             margin="normal"
             required
             fullWidth
+            id="name"
+            label="Name"
+            name="name"
+            autoComplete="name"
+            autoFocus
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
             id="email"
             label="Email Address"
             name="email"
             autoComplete="email"
-            autoFocus
           />
           <TextField
             margin="normal"
@@ -99,23 +97,23 @@ const Login = () => {
             id="password"
             autoComplete="current-password"
           />
+          {error && (
+            <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+              {error}
+            </Typography>
+          )}
           <Button
             type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Sign In
+            Sign Up
           </Button>
           <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
-            </Grid>
             <Grid item>
-              <Link href="#" variant="body2">
-                {"Don't have an account? Sign Up"}
+              <Link component={RouterLink} to="/login" variant="body2">
+                {'Already have an account? Sign In'}
               </Link>
             </Grid>
           </Grid>
@@ -125,4 +123,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
