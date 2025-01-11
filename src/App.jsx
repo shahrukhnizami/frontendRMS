@@ -1,91 +1,83 @@
+import React, { useState, useMemo } from 'react';
 import { AppProvider } from '@toolpad/core/react-router-dom';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import ContactsIcon from '@mui/icons-material/Contacts';
-import PeopleIcon from '@mui/icons-material/People';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import HomeWorkIcon from '@mui/icons-material/HomeWork';
-import OtherHousesIcon from '@mui/icons-material/OtherHouses';
-import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
-import ContactEmergencyIcon from '@mui/icons-material/ContactEmergency';
-import TaskIcon from '@mui/icons-material/Task';
-import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
-
-import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Avatar } from '@mui/material';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import {
+  Dashboard as DashboardIcon,
+  People as PeopleIcon,
+  ContactEmergency as ContactEmergencyIcon,
+  CurrencyExchange as CurrencyExchangeIcon,
+  Task as TaskIcon,
+  ThumbUpAlt as ThumbUpAltIcon,
+  Assignment as AssignmentIcon,
+  HomeWork as HomeWorkIcon,
+} from '@mui/icons-material';
+import { useAuth } from './context/AuthContext'; // Correctly access the user object from AuthContext
 
 // Navigation for Admin
 const ADMIN_NAVIGATION = [
-  {
-    kind: 'header',
-    title: 'Admin Panel',
-  },
-  {
-    segment: 'admin',
-    title: 'Dashboard',
-    icon: <DashboardIcon />,
-  },
-  {
-    segment: 'admin/users',
-    title: 'Users',
-    icon: <PeopleIcon />,
-  },
-  {
-    segment: 'admin/tenant',
-    title: 'Agent',
-    icon: <ContactEmergencyIcon />,
-  },
-  {
-    segment: 'admin/income',
-    title: 'Income',
-    icon: <CurrencyExchangeIcon />,
-  },
-  {
-    segment: 'admin/maintanance',
-    title: 'Maintainance',
-    icon: <TaskIcon />,
-  },
-  {
-    segment: 'admin/agrrement',
-    title: 'Agrrement',
-    icon: <ThumbUpAltIcon />,
-  },
+  { kind: 'header', title: 'Admin Panel', key: 'admin-header' },
+  { segment: 'admin', title: 'Dashboard', icon: <DashboardIcon />, key: 'admin-dashboard' },
+  { segment: 'admin/users', title: 'Users', icon: <PeopleIcon />, key: 'admin-users' },
+  { segment: 'admin/tenant', title: 'Agent', icon: <ContactEmergencyIcon />, key: 'admin-agent' },
+  { segment: 'admin/income', title: 'Income', icon: <CurrencyExchangeIcon />, key: 'admin-income' },
+  { segment: 'admin/maintanance', title: 'Maintenance', icon: <TaskIcon />, key: 'admin-maintenance' },
+  { segment: 'admin/agrrement', title: 'Agreement', icon: <ThumbUpAltIcon />, key: 'admin-agreement' },
 ];
 
 // Navigation for Agent
 const AGENT_NAVIGATION = [
-  {
-    kind: 'header',
-    title: 'Agent Panel',
-  },
-  {
-    segment: 'agent',
-    title: 'Dashboard',
-    icon: <DashboardIcon />,
-  },
-  {
-    segment: 'agent/properties',
-    title: 'Properties',
-    icon: <HomeWorkIcon />,
-  },
-
-  
-  {
-    segment: 'agent/tasks',
-    title: 'Tasks',
-    icon: <AssignmentIcon />,
-  },
+  { kind: 'header', title: 'Agent Panel', key: 'agent-header' },
+  { segment: 'agent', title: 'Dashboard', icon: <DashboardIcon />, key: 'agent-dashboard' },
+  { segment: 'agent/properties', title: 'Properties', icon: <HomeWorkIcon />, key: 'agent-properties' },
+  { segment: 'agent/tasks', title: 'Tasks', icon: <AssignmentIcon />, key: 'agent-tasks' },
 ];
 
 function App() {
   const location = useLocation();
+  const { user, login, logout } = useAuth(); // Correctly access the user object and auth functions from AuthContext
+  
+  const navigate = useNavigate();
 
-  // Determine the role based on the route
   const isAgent = location.pathname.startsWith('/agent');
   const navigation = isAgent ? AGENT_NAVIGATION : ADMIN_NAVIGATION;
+  const [session, setSession] = useState({});
+
+  
+ function DashboardLayoutAccount(props) {
+  const { window } = props;
+
+  const [session, setSession] = useState({
+    user
+  });}
+
+  const authentication = useMemo(() => {
+    return {
+      signIn: () => {
+        // You can pass real user data here, for now, it's just a mock login
+        login({
+          name: user.name,
+          email: user.email,
+          // token: 'your-jwt-token', // Use a real token here
+        });
+        setSession({
+          user
+        });
+      },
+      signOut: () => {
+        logout(user); // Call logout without the user data
+        setSession(null);
+        navigate("/"); // Redirect to homepage or login page
+      },
+    };
+  }, [login, logout, navigate]);
+  // const router = useDemoRouter('/');
 
   return (
     <AppProvider
+      session={session}
       navigation={navigation}
+      authentication={authentication}
+      // router={router}
       branding={{
         logo: (
           <Link to={isAgent ? '/agent' : '/admin'}>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, Typography, Grid } from '@mui/material';
 import { BarChart } from '@mui/x-charts/BarChart';
 
-export default function AgentDashboard() {
+export function AgentDashboard() {
   return (
     <Grid container spacing={3} style={{ padding: 16 }}>
       {/* Dashboard Title */}

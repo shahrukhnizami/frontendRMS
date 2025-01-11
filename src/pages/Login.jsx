@@ -1,4 +1,3 @@
-// src/pages/Login.js
 import React from 'react';
 import {
   Container,
@@ -11,10 +10,10 @@ import {
 } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useAuth } from '../context/AuthContext'; // Import the useAuth hook
+import { AuthProvider, useAuth } from '../context/AuthContext'; // Import the useAuth hook
 
 const Login = () => {
-  const { login } = useAuth(); // Access login function from AuthContext
+  const { login } = useAuth(AuthProvider); // Correctly use the useAuth hook
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
@@ -42,7 +41,7 @@ const Login = () => {
         const { token, user } = response.data;
 
         // Use the login function from AuthContext to set the user
-        login(user, token);
+        login({ ...user, token });
 
         // Redirect user based on their role
         if (user.role === 'admin') {
@@ -114,7 +113,7 @@ const Login = () => {
               </Link>
             </Grid>
             <Grid item>
-              <Link href="#" variant="body2">
+              <Link component={RouterLink} to="/register" variant="body2">
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>

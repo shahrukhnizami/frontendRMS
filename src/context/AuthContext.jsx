@@ -1,43 +1,29 @@
-// src/context/AuthContext.js
-import React, { createContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { createContext, useState, useContext } from 'react';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = sessionStorage.getItem('jwtToken');
-    if (token) {
-      const user = JSON.parse(sessionStorage.getItem('user'));
-      setUser(user);
-    }
-    setLoading(false);
-  }, []);
-
-  const login = (userData, token) => {
-    sessionStorage.setItem('jwtToken', token);
-    sessionStorage.setItem('user', JSON.stringify(userData));
+  const login = (userData) => {
     setUser(userData);
+    sessionStorage.setItem('jwtToken', userData.token); // Save the token in sessionStorage
   };
 
   const logout = () => {
-    sessionStorage.removeItem('jwtToken');
-    sessionStorage.removeItem('user');
     setUser(null);
-    navigate('/admin');
+    sessionStorage.removeItem('jwtToken'); // Remove token on logout
   };
 
-  return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  const value = { user, login, logout };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
-  return React.useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };
