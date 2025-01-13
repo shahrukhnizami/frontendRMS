@@ -48,8 +48,10 @@ const Login = () => {
           navigate('/admin');
         } else if (user.role === 'agent') {
           navigate('/agent');
+        } else if (user.role === 'user') {
+          navigate('/user');
         } else {
-          navigate('/admin');
+          navigate('/');
         }
       }
     } catch (error) {

@@ -11,9 +11,8 @@ import {
   Assignment as AssignmentIcon,
   HomeWork as HomeWorkIcon,
 } from '@mui/icons-material';
-import { useAuth } from './context/AuthContext'; // Correctly access the user object from AuthContext
+import { useAuth } from './context/AuthContext'; // Access AuthContext for user & auth functions
 
-// Navigation for Admin
 const ADMIN_NAVIGATION = [
   { kind: 'header', title: 'Admin Panel', key: 'admin-header' },
   { segment: 'admin', title: 'Dashboard', icon: <DashboardIcon />, key: 'admin-dashboard' },
@@ -24,7 +23,6 @@ const ADMIN_NAVIGATION = [
   { segment: 'admin/agrrement', title: 'Agreement', icon: <ThumbUpAltIcon />, key: 'admin-agreement' },
 ];
 
-// Navigation for Agent
 const AGENT_NAVIGATION = [
   { kind: 'header', title: 'Agent Panel', key: 'agent-header' },
   { segment: 'agent', title: 'Dashboard', icon: <DashboardIcon />, key: 'agent-dashboard' },
@@ -32,55 +30,63 @@ const AGENT_NAVIGATION = [
   { segment: 'agent/tasks', title: 'Tasks', icon: <AssignmentIcon />, key: 'agent-tasks' },
 ];
 
+const USER_NAVIGATION = [
+  { kind: 'header', title: 'User Panel', key: 'user-header' },
+  { segment: 'user', title: 'Dashboard', icon: <DashboardIcon />, key: 'user-dashboard' },
+  { segment: 'user/properties', title: 'Properties', icon: <HomeWorkIcon />, key: 'user-properties' },
+  { segment: 'user/tasks', title: 'Tasks', icon: <AssignmentIcon />, key: 'user-tasks' },
+];
+
 function App() {
   const location = useLocation();
-  const { user, login, logout } = useAuth(); // Correctly access the user object and auth functions from AuthContext
-  
+  const { user, login, logout } = useAuth(); // Access user and auth functions
   const navigate = useNavigate();
 
+  const [session, setSession] = useState(null);
+
   const isAgent = location.pathname.startsWith('/agent');
-  const navigation = isAgent ? AGENT_NAVIGATION : ADMIN_NAVIGATION;
-  const [session, setSession] = useState({});
+  const isUser = location.pathname.startsWith('/user');
+  const isAdmin = location.pathname.startsWith('/admin');
 
-  
- function DashboardLayoutAccount(props) {
-  const { window } = props;
-
-  const [session, setSession] = useState({
-    user
-  });}
+  const navigation = isAgent
+    ? AGENT_NAVIGATION
+    : isUser
+    ? USER_NAVIGATION
+    : isAdmin
+    ? ADMIN_NAVIGATION
+    : [];
 
   const authentication = useMemo(() => {
     return {
       signIn: () => {
-        // You can pass real user data here, for now, it's just a mock login
-        login({
-          name: user.name,
-          email: user.email,
-          // token: 'your-jwt-token', // Use a real token here
-        });
-        setSession({
-          user
-        });
+        if (user) {
+          setSession({
+            user: {
+              name: user.name,
+              email: user.email,
+              image: user.image || 'https://via.placeholder.com/40', // Default placeholder if no image
+            },
+          });
+        } else {
+          console.warn('User data is missing. Ensure login is working correctly.');
+        }
       },
       signOut: () => {
-        logout(user); // Call logout without the user data
-        setSession(null);
-        navigate("/"); // Redirect to homepage or login page
+        logout(); // Call the logout function from AuthContext
+        setSession(null); // Clear session state
+        navigate('/'); // Redirect to the homepage
       },
     };
-  }, [login, logout, navigate]);
-  // const router = useDemoRouter('/');
+  }, [user, logout, navigate]);
 
   return (
     <AppProvider
       session={session}
       navigation={navigation}
       authentication={authentication}
-      // router={router}
       branding={{
         logo: (
-          <Link to={isAgent ? '/agent' : '/admin'}>
+          <Link to="/">
             <img
               src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZkmOfnH5s5nqfhX1FQhV5J-yv4iAtWcVf1mLpWFDujTzg48yHEiCOiAdr5YQ7BwIx69w&usqp=CAU"
               alt="Rental Management Logo"
@@ -89,11 +95,14 @@ function App() {
           </Link>
         ),
         title: (
-          <Link to={isAgent ? '/agent' : '/admin'} style={{ textDecoration: 'none', color: 'inherit' }}>
-            {isAgent ? 'Agent Management System' : 'Rental Management System'}
+          <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+            {isAgent
+              ? 'Agent Management System'
+              : isAdmin
+              ? 'Admin Panel'
+              : 'Rental Management System'}
           </Link>
         ),
-        segment: isAgent ? 'agent' : 'admin',
       }}
     >
       <Outlet />

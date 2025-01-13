@@ -1,10 +1,10 @@
+"use_client"
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import App from './App.jsx';
+import App from './/App.jsx';
 import ContactUs from './pages/ContactUs.jsx';
 import Layout from './layout/layout.jsx';
-import Users from './pages/Users.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Login from './pages/Login.jsx';
 import AgentLayout from './layout/AgentLayout.jsx';
@@ -12,8 +12,10 @@ import Properties from './pages/Properties.jsx';
 import Tasks from './pages/Tasks.jsx';
 import Register from './pages/Register.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
-import './index.css';
 import { AgentDashboard } from './AgentDashBoard.jsx';
+import { UserDashboard } from './UserDashBoard';
+import UserLayout from '../src/layout/UserLayout';
+import Users from './pages/Admin/Users.jsx';
 
 const router = createBrowserRouter([
   {
@@ -38,6 +40,15 @@ const router = createBrowserRouter([
           { path: '/agent', element: <AgentDashboard /> },
           { path: '/agent/properties', element: <Properties /> },
           { path: '/agent/tasks', element: <Tasks /> },
+        ],
+      },
+      {
+        path: '/user',
+        element: <UserLayout />,
+        children: [
+          { path: '/user', element: <UserDashboard /> },
+          { path: '/user/properties', element: <Properties /> },
+          { path: '/user/tasks', element: <Tasks /> },
         ],
       },
     ],
