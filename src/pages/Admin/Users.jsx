@@ -9,91 +9,154 @@ import {
   Paper,
   Avatar,
   Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   Box,
-  IconButton,
-  Drawer,
+  CircularProgress,
   Button,
-  TextField,
-  MenuItem,
+  IconButton,
 } from '@mui/material';
-import { Edit, Delete, Add } from '@mui/icons-material';
+import Snackbar from '@mui/material/Snackbar';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
+import AddNewUser from '../../components/Drawer/AddNewUser';
 
 const Users = () => {
+  const { user } = useAuth();
   const [users, setUsers] = useState([]);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    role: 'user', // Default role
-  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+const [editDialogOpen, setEditDialogOpen] = useState(false);
+// const [selectedUser, setSelectedUser] = useState(null);
 
-  // Fetch users from API
- // Fetch users from API
-const fetchUsers = async () => {
+const openDeleteDialog = (user) => {
+    setSelectedUser(user);
+    setDeleteDialogOpen(true);
+  };
+  
+  const closeDeleteDialog = () => {
+    setSelectedUser(null);
+    setDeleteDialogOpen(false);
+  };
+  
+  const openEditDialog = (user) => {
+    setSelectedUser(user);
+    setEditDialogOpen(true);
+  };
+  
+  const closeEditDialog = () => {
+    setSelectedUser(null);
+    setEditDialogOpen(false);
+  };
+  
+
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      const response = await axios.get('http://localhost:4040/api/auth/users');
-      
-      // Ensure the response has the 'users' key
-      if (response.data && response.data.users) {
-        setUsers(response.data.users);
-      } else {
-        throw new Error('Unexpected response structure');
-      }
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      alert('Failed to load users. Please check the API or try again.');
+      const response = await axios.get('http://localhost:4040/api/auth/users', {
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+      setUsers(response.data?.users || []);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to fetch users');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
+
+  const handleSnackbarClose = () => setSnackbar({ ...snackbar, open: false });
+  
+  const deleteUser = async (userId) => {
+    // const confirmDelete = window.confirm('Are you sure you want to delete this user?');
+    if (!confirmDelete) return;
+  
+    try {
+      const response = await axios.delete(`http://localhost:4040/api/auth/users/${userId}`, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+      setSnackbar({ open: true, message: response.data.message, severity: 'success' });
+      fetchUsers();
+    } catch (err) {
+      setSnackbar({
+        open: true,
+        message: err.response?.data?.message || 'Failed to delete user',
+        severity: 'error',
+      });
     }
   };
   
+  // Add Snackbar component to your JSX
+  <Snackbar
+  open={snackbar.open}
+  autoHideDuration={6000}
+  onClose={handleSnackbarClose}
+  message={snackbar.message}
+  anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+  severity={snackbar.severity}
+/>
+  
+
+  const editUser = (user) => {
+    setSelectedUser(user); // Set the selected user to edit
+    setDrawerOpen(true); // Open the drawer for editing
+  };
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
-  // Handle Add User
-  const handleAddUser = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:4040/api/auth/register', formData, {
-        headers: { 'Content-Type': 'application/json' },
-      });
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
-      if (response.status === 201) {
-        alert('User added successfully!');
-        setIsDrawerOpen(false);
-        fetchUsers(); // Refresh user list
-      }
-    } catch (error) {
-      console.error('Error adding user:', error.response?.data || error.message);
-      alert(error.response?.data?.message || 'Failed to add user.');
-    }
-  };
-
-  // Handle Input Change in Drawer Form
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  if (error) {
+    return (
+      <Box sx={{ padding: 2 }}>
+        <Typography color="error" variant="h6">
+          {error}
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
-    <Box sx={{ padding: 2 }}>
-      <Typography variant="h4" gutterBottom>
-        Admin - User Management
-      </Typography>
-      <Button
-        variant="contained"
-        startIcon={<Add />}
-        sx={{ marginBottom: 2 }}
-        onClick={() => setIsDrawerOpen(true)}
+    <div className="m-5">
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 2,
+        }}
       >
-        Add User
-      </Button>
+        <Typography variant="h4" gutterBottom>
+          All Users
+        </Typography>
+        <Button variant="contained" onClick={() => setDrawerOpen(true)}>
+          Add New User
+        </Button>
+      </Box>
+
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Image</TableCell>
+              <TableCell>Avatar</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Role</TableCell>
@@ -112,19 +175,26 @@ const fetchUsers = async () => {
                   <Typography
                     sx={{
                       fontWeight: 'bold',
-                      color: user.role === 'admin' ? '#D32F2F' : user.role === 'agent' ? '#1976D2' : '#388E3C',
+                      color: user.role === 'admin' ? '#D32F2F' : '#1976D2',
                     }}
                   >
                     {user.role}
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <IconButton color="primary">
-                    <Edit />
-                  </IconButton>
-                  <IconButton color="error">
-                    <Delete />
-                  </IconButton>
+                <IconButton
+  onClick={() => openEditDialog(user)}
+  color="primary"
+  sx={{ marginRight: 2 }}
+>
+  <EditIcon />
+</IconButton>
+                  <IconButton
+  onClick={() => openDeleteDialog(user)}
+  color="error"
+>
+  <DeleteIcon />
+</IconButton>
                 </TableCell>
               </TableRow>
             ))}
@@ -132,60 +202,43 @@ const fetchUsers = async () => {
         </Table>
       </TableContainer>
 
-      {/* Add User Drawer */}
-      <Drawer anchor="right" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
-        <Box sx={{ width: 300, padding: 3 }} component="form" onSubmit={handleAddUser}>
-          <Typography variant="h6" gutterBottom>
-            Add New User
-          </Typography>
-          <TextField
-            label="Name"
-            name="name"
-            fullWidth
-            margin="normal"
-            required
-            value={formData.name}
-            onChange={handleChange}
-          />
-          <TextField
-            label="Email"
-            name="email"
-            fullWidth
-            margin="normal"
-            required
-            value={formData.email}
-            onChange={handleChange}
-          />
-          <TextField
-            label="Password"
-            name="password"
-            type="password"
-            fullWidth
-            margin="normal"
-            required
-            value={formData.password}
-            onChange={handleChange}
-          />
-          <TextField
-            label="Role"
-            name="role"
-            select
-            fullWidth
-            margin="normal"
-            required
-            value={formData.role}
-            onChange={handleChange}
-          >
-            <MenuItem value="admin">Admin</MenuItem>
-            <MenuItem value="agent">Agent</MenuItem>
-            <MenuItem value="user">User</MenuItem>
-          </TextField>
-          <Button type="submit" variant="contained" fullWidth sx={{ marginTop: 2 }}>
-            Add User
-          </Button>
-        </Box>
-      </Drawer>
-    </Box>
+
+      <Dialog open={editDialogOpen} onClose={closeEditDialog} fullWidth maxWidth="sm">
+  <DialogTitle>Edit User</DialogTitle>
+  <DialogContent>
+    <AddNewUser 
+      userToEdit={selectedUser} 
+      onClose={closeEditDialog} 
+      fetchUsers={fetchUsers} 
+    />
+  </DialogContent>
+</Dialog>
+      <Dialog open={deleteDialogOpen} onClose={closeDeleteDialog}>
+  <DialogTitle>Confirm Delete</DialogTitle>
+  <DialogContent>
+    <Typography>Are you sure you want to delete {selectedUser?.name}?</Typography>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={closeDeleteDialog} color="primary">Cancel</Button>
+    <Button 
+      onClick={() => {
+        deleteUser(selectedUser?.id);
+        closeDeleteDialog();
+      }} 
+      color="error"
+    >
+      Delete
+    </Button>
+  </DialogActions>
+</Dialog>
+
+      <AddNewUser
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        fetchUsers={fetchUsers}
+        userToEdit={selectedUser} // Passing the user to be edited
+      />
+    </div>
   );
 };
 
