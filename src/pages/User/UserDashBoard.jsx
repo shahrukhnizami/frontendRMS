@@ -1,13 +1,21 @@
 import React from 'react';
 import { Card, CardContent, Typography, Grid } from '@mui/material';
 import { BarChart } from '@mui/x-charts/BarChart';
+import { useAuth } from '../../context/AuthContext';
+
+
 
 export function UserDashboard() {
+  const { user } = useAuth();
   return (
     <Grid container spacing={3} style={{ padding: 16 }}>
       {/* Dashboard Title */}
       <Grid item xs={12}>
-        <Typography variant="h4">Welcome to the User Dashboard</Typography>
+        <Typography variant="h4">Welcome to the {user.name} Dashboard</Typography>
+         <Typography variant="subtitle1" color="textSecondary">
+                {user.email}
+                </Typography>
+        
         <Typography variant="subtitle1" color="textSecondary">
           Manage your properties, inquiries, and performance metrics.
         </Typography>

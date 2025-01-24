@@ -37,9 +37,11 @@ const [editDialogOpen, setEditDialogOpen] = useState(false);
 // const [selectedUser, setSelectedUser] = useState(null);
 
 const openDeleteDialog = (user) => {
-    setSelectedUser(user);
-    setDeleteDialogOpen(true);
-  };
+  console.log('Selected user for deletion:', user); // Debugging
+  setSelectedUser(user);
+  setDeleteDialogOpen(true);
+};
+
   
   const closeDeleteDialog = () => {
     setSelectedUser(null);
@@ -62,9 +64,10 @@ const openDeleteDialog = (user) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get('http://localhost:4040/api/auth/users', {
+      const response = await axios.get('https://backend-rms.vercel.app/api/auth/users', {
         headers: { Authorization: `Bearer ${user.token}` },
       });
+      console.log(response.data?.users); // Inspect the structure here
       setUsers(response.data?.users || []);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch users');
@@ -72,21 +75,20 @@ const openDeleteDialog = (user) => {
       setLoading(false);
     }
   };
-
+  
+  
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: '' });
 
   const handleSnackbarClose = () => setSnackbar({ ...snackbar, open: false });
   
   const deleteUser = async (userId) => {
-    // const confirmDelete = window.confirm('Are you sure you want to delete this user?');
-    if (!confirmDelete) return;
-  
+    console.log('User ID to delete:', userId); // Debugging
     try {
-      const response = await axios.delete(`http://localhost:4040/api/auth/users/${userId}`, {
+      const response = await axios.delete(`https://backend-rms.vercel.app/api/auth/users/${userId}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       setSnackbar({ open: true, message: response.data.message, severity: 'success' });
-      fetchUsers();
+      fetchUsers(); // Refresh the users list
     } catch (err) {
       setSnackbar({
         open: true,
@@ -95,6 +97,7 @@ const openDeleteDialog = (user) => {
       });
     }
   };
+  
   
   // Add Snackbar component to your JSX
   <Snackbar
@@ -165,38 +168,32 @@ const openDeleteDialog = (user) => {
           </TableHead>
           <TableBody>
             {users.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell>
-                  <Avatar src={user.image || ''} alt={user.name} />
-                </TableCell>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>
-                  <Typography
-                    sx={{
-                      fontWeight: 'bold',
-                      color: user.role === 'admin' ? '#D32F2F' : '#1976D2',
-                    }}
-                  >
-                    {user.role}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                <IconButton
-  onClick={() => openEditDialog(user)}
-  color="primary"
-  sx={{ marginRight: 2 }}
->
-  <EditIcon />
-</IconButton>
-                  <IconButton
-  onClick={() => openDeleteDialog(user)}
-  color="error"
->
-  <DeleteIcon />
-</IconButton>
-                </TableCell>
-              </TableRow>
+             <TableRow key={user._id || user.id}>
+              <TableCell>
+                <Avatar src={user.image || ''} alt={user.name} />
+              </TableCell>
+              <TableCell>{user.name}</TableCell>
+              <TableCell>{user.email}</TableCell>
+              <TableCell>
+                <Typography
+                  sx={{
+                    fontWeight: 'bold',
+                    color: user.role === 'admin' ? '#D32F2F' : '#1976D2',
+                  }}
+                >
+                  {user.role}
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <IconButton onClick={() => openEditDialog(user)} color="primary" sx={{ marginRight: 2 }}>
+                  <EditIcon />
+                </IconButton>
+                <IconButton onClick={() => openDeleteDialog(user)} color="error">
+                  <DeleteIcon />
+                </IconButton>
+              </TableCell>
+            </TableRow>
+            
             ))}
           </TableBody>
         </Table>
@@ -221,14 +218,14 @@ const openDeleteDialog = (user) => {
   <DialogActions>
     <Button onClick={closeDeleteDialog} color="primary">Cancel</Button>
     <Button 
-      onClick={() => {
-        deleteUser(selectedUser?.id);
-        closeDeleteDialog();
-      }} 
-      color="error"
-    >
-      Delete
-    </Button>
+  onClick={() => {
+    deleteUser(selectedUser?._id || selectedUser?.id); // Use the correct ID property
+    closeDeleteDialog();
+  }} 
+  color="error"
+>
+  Delete
+</Button>
   </DialogActions>
 </Dialog>
 

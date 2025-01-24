@@ -1,16 +1,22 @@
 import React from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { Typography, Card, CardContent, Grid } from '@mui/material';
+import { useAuth } from '../../context/AuthContext';
 
 const Dashboard = () => {
+  const { user } = useAuth();
   return (
     <Grid container spacing={3} style={{ padding: 16 }}>
       {/* Welcome Title */}
       <Grid item xs={12}>
-        <Typography variant="h4">Welcome to the Admin Dashboard</Typography>
+        <Typography variant="h4">Welcome to the {user.name} Dashboard</Typography>
+        <Typography variant="subtitle1" color="textSecondary">
+        {user.email}
+        </Typography>
         <Typography variant="subtitle1" color="textSecondary">
           Monitor key metrics and performance.
         </Typography>
+       
       </Grid>
 
       {/* Bar Chart Section */}

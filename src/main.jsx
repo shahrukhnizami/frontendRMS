@@ -5,15 +5,15 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './/App.jsx';
 import ContactUs from './pages/ContactUs.jsx';
 import Layout from './layout/layout.jsx';
-import Dashboard from './pages/Dashboard.jsx';
+import Dashboard from './pages/Admin/Dashboard.jsx';
 import Login from './pages/Login.jsx';
 import AgentLayout from './layout/AgentLayout.jsx';
 import Properties from './pages/Properties.jsx';
 import Tasks from './pages/Tasks.jsx';
 import Register from './pages/Register.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
-import { AgentDashboard } from './AgentDashBoard.jsx';
-import { UserDashboard } from './UserDashBoard';
+import { AgentDashboard } from './pages/Agent/AgentDashBoard.jsx';
+import { UserDashboard } from './pages/User/UserDashBoard.jsx';
 import UserLayout from '../src/layout/UserLayout';
 import Users from './pages/Admin/Users.jsx';
 
