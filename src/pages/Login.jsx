@@ -25,7 +25,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        "https://backend-rms.vercel.app/api/auth/login",
+        "https://hackathon-backend-mu-pearl.vercel.app/api/auth/login",
         {
           email,
           password,
